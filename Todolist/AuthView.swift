@@ -1,53 +1,69 @@
-//
-//  AuthView.swift
-//  Todolist
-//
-//  Created by Arthur Mariano on 16/09/25.
-//
-
 import SwiftUI
+import SwiftData
 
 struct AuthView: View {
-    @Environment(AuthService.self) private var authService: AuthService
+    @State private var selectedAuthTab: AuthTab = .signIn
+    @State private var textHeight: CGFloat = 0
     
-    @State private var email: String = ""
-    @State private var password: String = ""
-
     var body: some View {
-        VStack {
-            HStack(alignment: .top, spacing: 8) {
-                Rectangle()
-                    .fill(Color.gray)
-                    .frame(width: 4)
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 20) {
+                HStack(spacing: 12) {
+                    Rectangle()
+                        .fill(Color.secondary.opacity(0.4))
+                        .frame(width: 3, height: textHeight)
+                        .cornerRadius(1.5)
+                    
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("“Lorem ipsum dolor sit amet, consectetur adipiscing elit.”")
+                            .font(.subheadline)
+                            .foregroundStyle(.primary)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Text("Arthur Mariano")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .background(
+                        GeometryReader { geo in
+                            Color.clear
+                                .onAppear {
+                                    textHeight = geo.size.height
+                                }
+                                .onChange(of: geo.size.height) { _, newHeight in
+                                    textHeight = newHeight
+                                }
+                        }
+                    )
+                }
+                .padding(.vertical, 8)
+                .padding(.horizontal, 25)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Quote of the day. Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
                 
-                Text("Motivational frase here")
-                    .font(.body)
-                    .foregroundColor(.gray)
-                    .italic()
-            }
-            .padding()
-            
-            VStack {
-                TextField("Email", text: $email)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled(true)
-                    .padding(.horizontal)
+                Picker("Auth", selection: $selectedAuthTab) {
+                    Text("Login").tag(AuthTab.signIn)
+                    Text("Sign Up").tag(AuthTab.signUp)
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal, 20)
                 
-                SecureField("Password", text: $password)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding(.horizontal)
-                
-                Button("Sign In") {
-                    authService.signUp(email: email, password: password) { error in
+                VStack {
+                    switch selectedAuthTab {
+                    case .signIn:
+                        LoginView()
+                    case .signUp:
+                        SignupView()
                     }
                 }
+                Spacer()
             }
+            .padding(.vertical, 16)
+            .navigationTitle("Todolist")
         }
     }
 }
 
-#Preview {
-    AuthView()
-        .environment(AuthService())
+private enum AuthTab {
+    case signIn
+    case signUp
 }

@@ -6,16 +6,22 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
-    @State var authService = AuthService()
+    @Environment(AuthService.self) private var authService: AuthService
     
     var body: some View {
-        AuthView()
-            .environment(authService)
+        if authService.isSignedIn {
+            TaskList()
+                .modelContainer(for: Task.self, inMemory: true)
+        } else {
+            AuthView()
+        }
     }
 }
 
 #Preview {
     ContentView()
+        .environment(AuthService())
 }
