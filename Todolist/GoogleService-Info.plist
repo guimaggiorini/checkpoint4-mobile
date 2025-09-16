@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.arthvm.Todolist</string>
+	<string>com.arthvm.Todo</string>
 	<key>PROJECT_ID</key>
 	<string>auth-2b3f8</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:134679358719:ios:b2e9c67871ddd8464bb0ca</string>
+	<string>1:134679358719:ios:ebf474c34f48f4b14bb0ca</string>
 </dict>
 </plist>

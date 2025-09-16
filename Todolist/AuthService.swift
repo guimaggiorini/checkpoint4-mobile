@@ -21,7 +21,8 @@ class AuthService: ObservableObject {
     func signUp(email: String, password: String, completion: @escaping (Error?) -> Void) {
         Auth.auth().createUser(withEmail: email, password: password) {  result, error in
             if let error = error {
-                print("Sign Up Error: \(error.localizedDescription)")
+                print("Sign Up Error:")
+                print(error)
                 completion(error)
                 return
             }

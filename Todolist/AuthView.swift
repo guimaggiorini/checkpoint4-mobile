@@ -8,11 +8,46 @@
 import SwiftUI
 
 struct AuthView: View {
+    @EnvironmentObject private var authService: AuthService
+    
+    @State private var email: String = ""
+    @State private var password: String = ""
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            HStack(alignment: .top, spacing: 8) {
+                Rectangle()
+                    .fill(Color.gray)
+                    .frame(width: 4)
+                
+                Text("Motivational frase here")
+                    .font(.body)
+                    .foregroundColor(.gray)
+                    .italic()
+            }
+            .padding()
+            
+            VStack {
+                TextField("Email", text: $email)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled(true)
+                    .padding(.horizontal)
+                
+                SecureField("Password", text: $password)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(.horizontal)
+                
+                Button("Sign In") {
+                    authService.signUp(email: email, password: password) { error in
+                    }
+                }
+            }
+        }
     }
 }
 
 #Preview {
     AuthView()
+        .environmentObject(AuthService())
 }
