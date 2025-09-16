@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject var authService = AuthService()
+    @State var authService = AuthService()
     
     var body: some View {
         AuthView()
-            .environmentObject(authService)
+            .environment(authService)
     }
 }
 

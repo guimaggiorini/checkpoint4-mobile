@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AuthView: View {
-    @EnvironmentObject private var authService: AuthService
+    @Environment(AuthService.self) private var authService: AuthService
     
     @State private var email: String = ""
     @State private var password: String = ""
@@ -49,5 +49,5 @@ struct AuthView: View {
 
 #Preview {
     AuthView()
-        .environmentObject(AuthService())
+        .environment(AuthService())
 }

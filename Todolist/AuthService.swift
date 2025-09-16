@@ -7,11 +7,11 @@
 
 import Foundation
 import FirebaseAuth
-import Combine
 
-class AuthService: ObservableObject {
-    @Published var user: User? = nil
-    @Published var isSignedIn: Bool = false
+@Observable
+class AuthService {
+    var user: User? = nil
+    var isSignedIn: Bool = false
     
     init() {
         self.user = Auth.auth().currentUser
