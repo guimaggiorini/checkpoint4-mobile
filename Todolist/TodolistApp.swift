@@ -6,12 +6,12 @@
 //
 
 import SwiftUI
-import FIrebase
+import FirebaseCore
 
 @main
 struct TodolistApp: App {
     init() {
-        FirebaseApp.configue()
+        FirebaseApp.configure()
     }
     
     var body: some Scene {

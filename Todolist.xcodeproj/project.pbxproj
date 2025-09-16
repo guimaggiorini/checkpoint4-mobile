@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A49701F12E79A4FD00426837 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A49701F02E79A4FD00426837 /* FirebaseAuth */; };
+		A49701F32E79A4FD00426837 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = A49701F22E79A4FD00426837 /* FirebaseFirestore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		A4BCACAB2E7989420097829D /* Todolist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todolist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +28,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A49701F12E79A4FD00426837 /* FirebaseAuth in Frameworks */,
+				A49701F32E79A4FD00426837 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +72,8 @@
 			);
 			name = Todolist;
 			packageProductDependencies = (
+				A49701F02E79A4FD00426837 /* FirebaseAuth */,
+				A49701F22E79A4FD00426837 /* FirebaseFirestore */,
 			);
 			productName = Todolist;
 			productReference = A4BCACAB2E7989420097829D /* Todolist.app */;
@@ -346,6 +355,19 @@
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A49701F02E79A4FD00426837 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 65D591672E799B16001AB25D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		A49701F22E79A4FD00426837 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 65D591672E799B16001AB25D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A4BCACA32E7989420097829D /* Project object */;
 }

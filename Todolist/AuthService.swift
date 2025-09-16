@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseAuth
+import Combine
 
 class AuthService: ObservableObject {
     @Published var user: User? = nil
@@ -26,7 +27,7 @@ class AuthService: ObservableObject {
             }
 
             self.user = Auth.auth().currentUser
-            self.isSignedIn = self?.user != nil
+            self.isSignedIn = self.user != nil
             completion(nil)
         }
     }
@@ -35,10 +36,14 @@ class AuthService: ObservableObject {
         Auth.auth().signIn(withEmail: email, password: password) { result, error in
             if let error = error {
                 print("Sign In Error: \(error.localizedDescription)")
+                self.user = nil
+                self.isSignedIn = false
+                completion(error)
+                return
             }
-            
+
             self.user = Auth.auth().currentUser
-            self.isSignedIn = true
+            self.isSignedIn = self.user != nil
             completion(nil)
         }
     }
