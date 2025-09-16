@@ -34,7 +34,11 @@ struct TaskList: View {
                     .onDelete(perform: deleteTasks(indexes:))
                 }
             } else {
-                ContentUnavailableView("Add tasks", systemImage: "long.text.page.and.pencil.fill")
+                Button(action: addTask) {
+                    ContentUnavailableView("Add tasks", systemImage: "long.text.page.and.pencil.fill")
+                        .foregroundStyle(.black)
+                }
+                .tint(.black)
             }
         }
         .navigationTitle("Tasks")
