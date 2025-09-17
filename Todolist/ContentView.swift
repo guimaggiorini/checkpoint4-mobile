@@ -12,11 +12,14 @@ struct ContentView: View {
     @Environment(AuthService.self) private var authService: AuthService
     
     var body: some View {
-        if authService.isSignedIn {
-            TaskList()
-                .modelContainer(for: Task.self, inMemory: true)
-        } else {
-            AuthView()
+        NavigationStack {
+            if authService.isSignedIn {
+                TaskList()
+                    .environment(authService)
+                    .environment(TaskService(authService: authService))
+            } else {
+                AuthView()
+            }
         }
     }
 }

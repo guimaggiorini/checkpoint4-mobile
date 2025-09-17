@@ -9,30 +9,48 @@
 import SwiftUI
 
 struct TaskForm: View {
-    @Bindable var task: Task
+    @Binding var task: Task
     var isNew: Bool = false
-    var onSave: (() -> Void)?
+    var onSave: () -> Void
 
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         Form {
             TextField("Title", text: $task.title)
-            TextField("Description", text: $task.taskDescription)
+            TextField("Description", text: $task.description)
             DatePicker("Due Date", selection: $task.dueDate)
             Toggle("Completed", isOn: $task.completed)
         }
         .navigationTitle(isNew ? "New Task" : "Edit Task")
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
-                    onSave?()
+                Button {
+                    onSave()
                     dismiss()
+                } label: {
+                    Label("Save", systemImage: "checkmark")
+                }
+                .disabled(task.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+            if isNew {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Label("Cancel", systemImage: "xmark")
+                    }
                 }
             }
-            isNew ? ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") { dismiss() }
-            } : nil
+        }
+    }
+}
+
+#Preview {
+    @Previewable @State var task: Task = Task(title: "Test", description: "Testing description!", completed: false, dueDate: .now, createdAt: .now)
+    
+    NavigationStack {
+        TaskForm(task: $task) {
         }
     }
 }

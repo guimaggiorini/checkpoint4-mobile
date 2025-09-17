@@ -1,85 +1,128 @@
-//
-//  TaskList.swift
-//  Todolist
-//
-//  Created by Gui Maggiorini on 16/09/25.
-//
+import SwiftUI
 
-import SwiftData
 import SwiftUI
 
 struct TaskList: View {
-    @State private var searchText = ""
-    @Query(sort: \Task.dueDate) private var tasks: [Task]
-    @Environment(\.modelContext) private var context
-    @State private var newTask: Task?
-
-    var filteredTasks: [Task] {
-        if searchText.isEmpty {
-            return tasks
-        } else {
-            return tasks.filter { $0.title.localizedStandardContains(searchText) }
-        }
-    }
+    @Environment(TaskService.self) private var taskService
+    @State private var searchText: String = ""
+    @State private var draftTask: Task?
+    
+    @State private var showErrorAlert = false
+    @State private var errorMessage = ""
 
     var body: some View {
-        Group {
-            if !filteredTasks.isEmpty {
-                List {
-                    ForEach(filteredTasks) { task in
-                        NavigationLink(task.title) {
-                            TaskForm(task: task)
+        List {
+            ForEach(filteredTasks) { task in
+                NavigationLink {
+                    TaskForm(task: binding(for: task)) {
+                        taskService.addTask(task: task) { error in
+                            if let error = error {
+                                showError(error)
+                            }
                         }
                     }
-                    .onDelete(perform: deleteTasks(indexes:))
+                } label: {
+                    Text(task.title)
                 }
-            } else {
-                Button(action: addTask) {
-                    ContentUnavailableView("Add tasks", systemImage: "long.text.page.and.pencil.fill")
-                        .foregroundStyle(.black)
-                }
-                .tint(.black)
+            }
+        }
+        .overlay {
+            if filteredTasks.isEmpty {
+                ContentUnavailableView("No tasks yet", systemImage: "square.and.pencil")
+                    .onTapGesture(perform: addTask)
             }
         }
         .navigationTitle("Tasks")
+        .searchable(text: $searchText)
         .toolbar {
             ToolbarItem {
-                Button("Create task", systemImage: "plus", action: addTask)
-            }
-            ToolbarItem(placement: .topBarTrailing) {
                 EditButton()
             }
-        }
-        .sheet(item: $newTask) { task in
-            NavigationStack {
-                TaskForm(task: task, isNew: true, onSave: { newTask = nil })
+            
+            DefaultToolbarItem(kind: .search, placement: .bottomBar)
+
+            ToolbarSpacer(placement: .bottomBar)
+
+            ToolbarItem(placement: .bottomBar) {
+                Button {
+                    addTask()
+                } label: {
+                    Label("New Task", systemImage: "plus")
+                }
             }
-            .interactiveDismissDisabled()
         }
-        .searchable(text: $searchText, prompt: "Search tasks")
+        .sheet(item: $draftTask) { task in
+            NavigationStack {
+                TaskForm(task: bindingForDraft(task), isNew: true) {
+                    taskService.addTask(task: task) { error in
+                        if let error = error {
+                            showError(error)
+                        }
+                        draftTask = nil
+                    }
+                }
+                .interactiveDismissDisabled()
+            }
+        }
+        .onAppear {
+            taskService.getTasks { error in
+                if let error = error {
+                    showError(error)
+                }
+            }
+        }
+        .alert("Error", isPresented: $showErrorAlert, actions: {
+            Button("OK", role: .cancel) { }
+        }, message: {
+            Text(errorMessage)
+        })
+    }
+
+    private var filteredTasks: [Task] {
+        searchText.isEmpty
+            ? taskService.tasks
+            : taskService.tasks.filter { $0.title.localizedStandardContains(searchText) }
     }
 
     private func addTask() {
-        let task = Task(
+        draftTask = Task(
+            id: UUID().uuidString,
             title: "",
-            taskDescription: "",
+            description: "",
+            completed: false,
             dueDate: .now,
-            userId: UUID()
+            createdAt: .now,
+            updatedAt: nil
         )
-        context.insert(task)
-        newTask = task
     }
 
-    private func deleteTasks(indexes: IndexSet) {
-        for index in indexes {
-            context.delete(filteredTasks[index])
+    private func binding(for task: Task) -> Binding<Task> {
+        guard let index = taskService.tasks.firstIndex(where: { $0.id == task.id }) else {
+            return .constant(task)
         }
+        return Binding(
+            get: { taskService.tasks[index] },
+            set: { taskService.tasks[index] = $0 }
+        )
+    }
+
+    private func bindingForDraft(_ task: Task) -> Binding<Task> {
+        Binding(
+            get: { draftTask ?? task },
+            set: { draftTask = $0 }
+        )
+    }
+
+    private func showError(_ error: Error) {
+        errorMessage = error.localizedDescription
+        showErrorAlert = true
     }
 }
+
 
 #Preview {
     NavigationStack {
         TaskList()
-            .modelContainer(for: Task.self, inMemory: true)
+            .environment(TaskService(authService: AuthService()))
     }
 }
