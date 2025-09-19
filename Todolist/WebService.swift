@@ -1,34 +1,41 @@
-//
-//  WebService.swift
-//  AulaMobile0508
-//
-//  Created by Gui Maggiorini on 16/09/25.
-//
-
 import Foundation
 
-class WebService: Codable {
-    func downloadData<T: Codable>(fromURL: String) async -> T? {
-        do {
-            guard let url = URL(string: fromURL) else { throw NetworkError.badUrl }
-            let (data, response) = try await URLSession.shared.data(from: url)
-            guard let response = response as? HTTPURLResponse else { throw NetworkError.badResponse }
-            guard response.statusCode >= 200 && response.statusCode < 300 else { throw NetworkError.badStatus }
-            guard let decodedResponse = try? JSONDecoder().decode(T.self, from: data) else { throw NetworkError.failedToDecodeResponse }
-            
-            return decodedResponse
-        } catch NetworkError.badUrl {
-            print("There was an error creating the URL")
-        } catch NetworkError.badResponse {
-            print("Did not get a valid response")
-        } catch NetworkError.badStatus {
-            print("Did not get a 2xx status code from the response")
-        } catch NetworkError.failedToDecodeResponse {
-            print("Failed to decode response into the given type")
-        } catch {
-            print("An error occured downloading the data")
+protocol WebServicing {
+    func downloadData<T: Decodable>(
+        fromURL: String,
+        headers: [String: String]?,
+        configureDecoder: ((JSONDecoder) -> Void)?
+    ) async throws -> T
+}
+
+class WebService: WebServicing {
+    func downloadData<T: Decodable>(
+        fromURL: String,
+        headers: [String: String]? = nil,
+        configureDecoder: ((JSONDecoder) -> Void)? = nil
+    ) async throws -> T {
+        guard let url = URL(string: fromURL) else {
+            throw NetworkError.badUrl
         }
         
-        return nil
+        var request = URLRequest(url: url)
+        if let headers = headers {
+            for (key, value) in headers {
+                request.setValue(value, forHTTPHeaderField: key)
+            }
+        }
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let response = response as? HTTPURLResponse else { throw NetworkError.badResponse }
+        guard (200..<300).contains(response.statusCode) else { throw NetworkError.badStatus }
+        
+        let decoder = JSONDecoder()
+        configureDecoder?(decoder)
+        
+        do {
+            return try decoder.decode(T.self, from: data)
+        } catch {
+            throw NetworkError.failedToDecodeResponse
+        }
     }
 }
