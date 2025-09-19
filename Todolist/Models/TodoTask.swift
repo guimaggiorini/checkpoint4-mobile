@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-struct Task: Identifiable, Codable {
+struct TodoTask: Identifiable, Codable {
     @DocumentID var id: String?
     var title: String
     var description: String

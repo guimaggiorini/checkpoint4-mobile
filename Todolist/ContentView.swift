@@ -15,8 +15,6 @@ struct ContentView: View {
         NavigationStack {
             if authService.isSignedIn {
                 TaskList()
-                    .environment(authService)
-                    .environment(TaskService(authService: authService))
             } else {
                 AuthView()
             }

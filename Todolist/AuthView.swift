@@ -4,7 +4,7 @@ import SwiftData
 struct AuthView: View {
     @State private var selectedAuthTab: AuthTab = .signIn
     @State private var textHeight: CGFloat = 0
-    @StateObject private var quotesStore = QuotesStore(webService: WebService())
+    @Environment(QuotesStore.self) private var quotesStore
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -31,16 +31,22 @@ struct AuthView: View {
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         } else {
-                            Text("No quotes available")
+                            Text("\"Well, seams like there's nothing to motivate you, buddy.\"")
                                 .font(.subheadline)
                                 .foregroundStyle(.primary)
                                 .fixedSize(horizontal: false, vertical: true)
+                             Text("Arthur Mariano")
+                                 .font(.caption)
+                                 .foregroundStyle(.secondary)
                         }
                     case .failure:
-                        Text("Failed to load quote")
+                        Text("\"We tried to find something cool for you, but we had some Skill Issues on the way\"")
                             .font(.subheadline)
                             .foregroundStyle(.primary)
                             .fixedSize(horizontal: false, vertical: true)
+                         Text("Arthur Mariano")
+                             .font(.caption)
+                             .foregroundStyle(.secondary)
                     case .idle:
                         Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
                             .font(.subheadline)
@@ -57,7 +63,7 @@ struct AuthView: View {
                             .onAppear {
                                 textHeight = geo.size.height
                             }
-                            .onChange(of: geo.size.height) { newHeight in
+                            .onChange(of: geo.size.height) { _, newHeight in
                                 textHeight = newHeight
                             }
                     }
@@ -66,7 +72,6 @@ struct AuthView: View {
             .padding(.vertical, 8)
             .padding(.horizontal, 25)
             .accessibilityElement(children: .combine)
-            .accessibilityLabel("Quote of the day. Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
             
             Picker("Auth", selection: $selectedAuthTab) {
                 Text("Login").tag(AuthTab.signIn)
@@ -102,5 +107,6 @@ private enum AuthTab {
     NavigationStack {
         AuthView()
             .environment(AuthService())
+            .environment(QuotesStore(webService: WebService()))
     }
 }

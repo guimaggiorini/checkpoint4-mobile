@@ -9,18 +9,51 @@
 import SwiftUI
 
 struct TaskForm: View {
-    @Binding var task: Task
+    @Binding var task: TodoTask
     var isNew: Bool = false
     var onSave: () -> Void
-
+    
     @Environment(\.dismiss) private var dismiss
-
+    @Environment(TaskService.self) private var taskService
+    
     var body: some View {
-        Form {
-            TextField("Title", text: $task.title)
-            TextField("Description", text: $task.description)
-            DatePicker("Due Date", selection: $task.dueDate)
-            Toggle("Completed", isOn: $task.completed)
+        VStack {
+            Form {
+                Section {
+                    TextField("Title", text: $task.title)
+                    ZStack(alignment: .topLeading) {
+                        if task.description.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            Text("Description")
+                                .foregroundStyle(.gray)
+                                .padding(.horizontal, 4)
+                                .padding(.vertical, 8)
+                                .allowsHitTesting(false)
+                        }
+
+                        TextEditor(text: $task.description)
+                            .frame(minHeight: 100)
+                    }
+                }
+                
+                Section {
+                    DatePicker("Due Date", selection: $task.dueDate)
+                }
+                
+                Section {
+                    Toggle("Completed", isOn: $task.completed)
+                }
+                
+                if !isNew {
+                    Button(role: .destructive) {
+                        guard let taskId = task.id else { return }
+                        dismiss()
+                        taskService.deleteTask(taskId: taskId)
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                            .foregroundStyle(.red)
+                    }
+                }
+            }
         }
         .navigationTitle(isNew ? "New Task" : "Edit Task")
         .toolbar {
@@ -47,10 +80,11 @@ struct TaskForm: View {
 }
 
 #Preview {
-    @Previewable @State var task: Task = Task(title: "Test", description: "Testing description!", completed: false, dueDate: .now, createdAt: .now)
+    @Previewable @State var task: TodoTask = TodoTask(title: "Test", description: "Testing description!", completed: false, dueDate: .now, createdAt: .now)
     
     NavigationStack {
         TaskForm(task: $task) {
         }
+        .environment(TaskService(authService: AuthService()))
     }
 }

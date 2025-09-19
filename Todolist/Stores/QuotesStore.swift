@@ -1,9 +1,8 @@
 import Foundation
 import SwiftUI
-internal import Combine
 
-@MainActor
-class QuotesStore: ObservableObject {
+@Observable
+class QuotesStore {
     enum LoadState {
         case idle
         case loading
@@ -11,8 +10,8 @@ class QuotesStore: ObservableObject {
         case failure(Error)
     }
 
-    @Published private(set) var state: LoadState = .idle
-    @Published var selectedQuote: Quote?
+    private(set) var state: LoadState = .idle
+    var selectedQuote: Quote?
     
     var quotes: [Quote] {
         if case .success(let quotes) = state {

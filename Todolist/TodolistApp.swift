@@ -10,14 +10,24 @@ import Firebase
 
 @main
 struct TodolistApp: App {
+    @State private var authService: AuthService
+    @State private var taskService: TaskService
+    @State private var quotesStore: QuotesStore = QuotesStore(webService: WebService())
+    
     init() {
         FirebaseApp.configure()
+        
+        let auth = AuthService()
+        _authService = State(initialValue: auth)
+        _taskService = State(initialValue: TaskService(authService: auth))
     }
     
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(AuthService())
+                .environment(authService)
+                .environment(taskService)
+                .environment(quotesStore)
         }
     }
 }

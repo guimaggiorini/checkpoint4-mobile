@@ -5,7 +5,7 @@ import SwiftUI
 struct TaskList: View {
     @Environment(TaskService.self) private var taskService
     @State private var searchText: String = ""
-    @State private var draftTask: Task?
+    @State private var draftTask: TodoTask?
     
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
@@ -15,7 +15,7 @@ struct TaskList: View {
             ForEach(filteredTasks) { task in
                 NavigationLink {
                     TaskForm(task: binding(for: task)) {
-                        taskService.addTask(task: task) { error in
+                        taskService.updateTask(task: task) { error in
                             if let error = error {
                                 showError(error)
                             }
@@ -25,6 +25,7 @@ struct TaskList: View {
                     Text(task.title)
                 }
             }
+            .onDelete(perform: deleteTask)
         }
         .overlay {
             if filteredTasks.isEmpty {
@@ -78,14 +79,14 @@ struct TaskList: View {
         })
     }
 
-    private var filteredTasks: [Task] {
+    private var filteredTasks: [TodoTask] {
         searchText.isEmpty
             ? taskService.tasks
             : taskService.tasks.filter { $0.title.localizedStandardContains(searchText) }
     }
 
     private func addTask() {
-        draftTask = Task(
+        draftTask = TodoTask(
             id: UUID().uuidString,
             title: "",
             description: "",
@@ -96,17 +97,23 @@ struct TaskList: View {
         )
     }
 
-    private func binding(for task: Task) -> Binding<Task> {
-        guard let index = taskService.tasks.firstIndex(where: { $0.id == task.id }) else {
-            return .constant(task)
-        }
-        return Binding(
-            get: { taskService.tasks[index] },
-            set: { taskService.tasks[index] = $0 }
+    private func binding(for task: TodoTask) -> Binding<TodoTask> {
+        Binding(
+            get: {
+                if let index = taskService.tasks.firstIndex(where: { $0.id == task.id }) {
+                    return taskService.tasks[index]
+                }
+                return task
+            },
+            set: { newValue in
+                if let index = taskService.tasks.firstIndex(where: { $0.id == task.id }) {
+                    taskService.tasks[index] = newValue
+                }
+            }
         )
     }
 
-    private func bindingForDraft(_ task: Task) -> Binding<Task> {
+    private func bindingForDraft(_ task: TodoTask) -> Binding<TodoTask> {
         Binding(
             get: { draftTask ?? task },
             set: { draftTask = $0 }
@@ -116,6 +123,15 @@ struct TaskList: View {
     private func showError(_ error: Error) {
         errorMessage = error.localizedDescription
         showErrorAlert = true
+    }
+    
+    private func deleteTask(at offsets: IndexSet) {
+        for index in offsets {
+            let task = filteredTasks[index]
+            guard let taskId = task.id else { return }
+            
+            taskService.deleteTask(taskId: taskId)
+        }
     }
 }
 
