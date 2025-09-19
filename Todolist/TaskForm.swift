@@ -56,6 +56,7 @@ struct TaskForm: View {
             }
         }
         .navigationTitle(isNew ? "New Task" : "Edit Task")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button {

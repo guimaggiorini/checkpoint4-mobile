@@ -9,10 +9,12 @@
 /* Begin PBXBuildFile section */
 		A498DFFB2E79E5A800CA48EE /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A498DFFA2E79E5A800CA48EE /* FirebaseAuth */; };
 		A498DFFD2E79E5A800CA48EE /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = A498DFFC2E79E5A800CA48EE /* FirebaseFirestore */; };
+		A4FF1BB22E7DD4ED00E76ED7 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = A4FF1BB12E7DD4ED00E76ED7 /* Localizable.xcstrings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		A4BCACAB2E7989420097829D /* Todolist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todolist.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A4FF1BB12E7DD4ED00E76ED7 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -39,6 +41,7 @@
 		A4BCACA22E7989420097829D = {
 			isa = PBXGroup;
 			children = (
+				A4FF1BB12E7DD4ED00E76ED7 /* Localizable.xcstrings */,
 				A4BCACAD2E7989420097829D /* Todolist */,
 				A4BCACAC2E7989420097829D /* Products */,
 			);
@@ -100,6 +103,7 @@
 			knownRegions = (
 				en,
 				Base,
+				"pt-BR",
 			);
 			mainGroup = A4BCACA22E7989420097829D;
 			minimizedProjectReferenceProxies = 1;
@@ -121,6 +125,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A4FF1BB22E7DD4ED00E76ED7 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -197,6 +202,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -254,6 +260,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
