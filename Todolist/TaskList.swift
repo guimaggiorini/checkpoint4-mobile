@@ -3,7 +3,9 @@ import SwiftUI
 import SwiftUI
 
 struct TaskList: View {
+    @Environment(NotificationService.self) private var notificationService
     @Environment(TaskService.self) private var taskService
+    
     @State private var searchText: String = ""
     @State private var draftTask: TodoTask?
     
@@ -15,6 +17,10 @@ struct TaskList: View {
             ForEach(filteredTasks) { task in
                 NavigationLink {
                     TaskForm(task: binding(for: task)) {
+                        Task {
+                            await notificationService.scheduleNotification(for: task.dueDate, title: task.title, body: task.description, identifier: task.id)
+                        }
+
                         taskService.updateTask(task: task) { error in
                             if let error = error {
                                 showError(error)
@@ -55,6 +61,10 @@ struct TaskList: View {
         .sheet(item: $draftTask) { task in
             NavigationStack {
                 TaskForm(task: bindingForDraft(task), isNew: true) {
+                    Task {
+                        await notificationService.scheduleNotification(for: task.dueDate, title: task.title, body: task.description, identifier: task.id)
+                    }
+                    
                     taskService.addTask(task: task) { error in
                         if let error = error {
                             showError(error)
@@ -140,5 +150,6 @@ struct TaskList: View {
     NavigationStack {
         TaskList()
             .environment(TaskService(authService: AuthService()))
+            .environment(NotificationService())
     }
 }

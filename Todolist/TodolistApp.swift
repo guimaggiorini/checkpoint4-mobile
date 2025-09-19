@@ -13,6 +13,7 @@ struct TodolistApp: App {
     @State private var authService: AuthService
     @State private var taskService: TaskService
     @State private var quotesStore: QuotesStore = QuotesStore(webService: WebService())
+    @State private var notificationService: NotificationService = NotificationService()
     
     init() {
         FirebaseApp.configure()
@@ -28,6 +29,7 @@ struct TodolistApp: App {
                 .environment(authService)
                 .environment(taskService)
                 .environment(quotesStore)
+                .environment(notificationService)
         }
     }
 }
