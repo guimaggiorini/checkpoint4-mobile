@@ -228,7 +228,7 @@ struct SignupView: View {
                             .bold()
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(12)
+                    .padding(7)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.accentColor)
@@ -236,11 +236,49 @@ struct SignupView: View {
                 .disabled(isLoading)
                 .animation(.easeInOut(duration: 0.2), value: isFormValid)
                 .accessibilityHint("Sign up with email and password")
+                
+                Button(action: signUpWithGoogle) {
+                    HStack {
+                        if isLoading {
+                            ProgressView()
+                                .tint(.white)
+                        } else {
+                            Image("google")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 24, height: 24)
+                        }
+                        Text("Sign up with Google")
+                            .bold()
+                            .foregroundStyle(.black)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(5)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.white)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .stroke(Color.black, lineWidth: 1)
+                }
+                .disabled(isLoading)
+                .animation(.easeInOut(duration: 0.2), value: isFormValid)
+                .accessibilityHint("Sign up with Google")
             }
             .padding(.top, 6)
         }
         .padding(.horizontal, 20)
         
+    }
+    
+    private func signUpWithGoogle() {
+        Task {
+            do {
+                try await authService.signInWithGoogle()
+            } catch {
+                print("An unexpected error occurred while signing up with Google.")
+            }
+        }
     }
     
     private func borderColor(for error: String?) -> Color {

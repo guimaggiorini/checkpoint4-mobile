@@ -6,7 +6,15 @@
 //
 
 import Foundation
+import Firebase
 import FirebaseAuth
+import GoogleSignIn
+import UIKit
+
+enum AuthenticationError: Error {
+    case runtimeError(String)
+    case notNewUser
+}
 
 @Observable
 class AuthService {
@@ -26,7 +34,7 @@ class AuthService {
                 completion(error)
                 return
             }
-
+            
             self.user = Auth.auth().currentUser
             self.isSignedIn = self.user != nil
             completion(nil)
@@ -42,7 +50,7 @@ class AuthService {
                 completion(error)
                 return
             }
-
+            
             self.user = Auth.auth().currentUser
             self.isSignedIn = self.user != nil
             completion(nil)
@@ -51,6 +59,7 @@ class AuthService {
     
     func signOut() {
         do {
+            GIDSignIn.sharedInstance.signOut()
             try Auth.auth().signOut()
             self.user = nil
             self.isSignedIn = false
@@ -58,4 +67,35 @@ class AuthService {
             print("Sign Out Error: \(error.localizedDescription)")
         }
     }
+    
+    func signInWithGoogle() async throws {
+        guard let clientID = FirebaseApp.app()?.options.clientID else {
+            fatalError("no firbase clientID found")
+        }
+        
+        let config = GIDConfiguration(clientID: clientID)
+        GIDSignIn.sharedInstance.configuration = config
+        
+        let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+        guard let rootViewController = scene?.windows.first?.rootViewController
+        else {
+            fatalError("There is no root view controller!")
+        }
+        
+        let result = try await GIDSignIn.sharedInstance.signIn(
+            withPresenting: rootViewController
+        )
+        let user = result.user
+        guard let idToken = user.idToken?.tokenString else {
+            throw AuthenticationError.runtimeError("Unexpected error occurred, please retry")
+        }
+        
+        let credential = GoogleAuthProvider.credential(
+            withIDToken: idToken, accessToken: user.accessToken.tokenString
+        )
+        let authResult = try await Auth.auth().signIn(with: credential)
+        self.user = authResult.user
+        self.isSignedIn = true
+    }
 }
+

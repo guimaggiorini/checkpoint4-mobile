@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Firebase
+import GoogleSignIn
 
 @main
 struct TodolistApp: App {
@@ -30,6 +31,9 @@ struct TodolistApp: App {
                 .environment(taskService)
                 .environment(quotesStore)
                 .environment(notificationService)
+                .onOpenURL { url in
+                    GIDSignIn.sharedInstance.handle(url)
+                }
         }
     }
 }

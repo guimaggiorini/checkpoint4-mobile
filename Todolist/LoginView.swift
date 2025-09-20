@@ -7,6 +7,7 @@
 
 
 import SwiftUI
+import GoogleSignInSwift
 
 struct LoginView: View {
     @Environment(AuthService.self) private var authService: AuthService
@@ -157,7 +158,7 @@ struct LoginView: View {
                             .bold()
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(12)
+                    .padding(7)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.accentColor)
@@ -165,11 +166,49 @@ struct LoginView: View {
                 .disabled(isLoading)
                 .animation(.easeInOut(duration: 0.2), value: isFormValid)
                 .accessibilityHint("Login with email and password")
+                
+                Button(action: signInWithGoogle) {
+                    HStack {
+                        if isLoading {
+                            ProgressView()
+                                .tint(.white)
+                        } else {
+                            Image("google")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 24, height: 24)
+                        }
+                        Text("Sign in with Google")
+                            .bold()
+                            .foregroundStyle(.black)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(5)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.white)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .stroke(Color.black, lineWidth: 1)
+                }
+                .disabled(isLoading)
+                .animation(.easeInOut(duration: 0.2), value: isFormValid)
+                .accessibilityHint("Sign in with Google")
             }
             .padding(.top, 6)
         }
         .padding(.horizontal, 20)
         
+    }
+    
+    private func signInWithGoogle() {
+        Task {
+            do {
+                try await authService.signInWithGoogle()
+            } catch {
+                print("An unexpected error occurred while signing in with Google.")
+            }
+        }
     }
     
     private func borderColor(for error: String?) -> Color {

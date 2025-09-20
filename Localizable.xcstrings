@@ -316,6 +316,16 @@
         }
       }
     },
+    "Sign in with Google" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrar com Google"
+          }
+        }
+      }
+    },
     "Sign Up" : {
       "localizations" : {
         "pt-BR" : {
@@ -332,6 +342,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cadastrar com email e senha"
+          }
+        }
+      }
+    },
+    "Sign up with Google" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cadastrar-se com Google"
           }
         }
       }

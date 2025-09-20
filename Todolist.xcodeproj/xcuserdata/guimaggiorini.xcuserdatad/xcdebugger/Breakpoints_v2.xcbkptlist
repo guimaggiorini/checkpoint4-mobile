@@ -14,9 +14,9 @@
             filePath = "Todolist/SignupView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "273"
-            endingLineNumber = "273"
-            landmarkName = "validateConfirmPassword()"
+            startingLineNumber = "311"
+            endingLineNumber = "311"
+            landmarkName = "validatePassword()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
